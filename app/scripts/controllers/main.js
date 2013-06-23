@@ -13,15 +13,15 @@ angular.module('AngularFeedReaderApp')
     }];
 
     $scope.addFeed = function(feed) {
-      $scope.feeds.push(feed);
-      $scope.fetchFeed(feed);
+      if (feed.$valid) {
+        $scope.feeds.push(feed);
+        $scope.fetchFeed(feed);
+        $scope.newFeed = {};
+      }
     };
 
     $scope.fetchFeed = function(feed){
         feed.items = [];
-
-        $timeout(function() { $scope.fetchFeed(feed); }, $scope.refreshInterval * 1000);
-
 
         var apiUrl = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20xml%20where%20url%3D'";
         apiUrl += encodeURIComponent(feed.url);
@@ -36,9 +36,14 @@ angular.module('AngularFeedReaderApp')
           error(function(data, status, headers, config) {
             console.error('Error fetching feed:', data);
           });
+
+        $timeout(function() { $scope.fetchFeed(feed); }, $scope.refreshInterval * 1000);
+
     };
 
     $scope.deleteFeed = function(feed) {
       $scope.feeds.splice($scope.feeds.indexOf(feed), 1);
     };
+
+     $scope.fetchFeed($scope.feeds[0]);
   });

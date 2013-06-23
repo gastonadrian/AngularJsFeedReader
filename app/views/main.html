@@ -1,9 +1,9 @@
 <p>Refresh (seconds): <input ng-model="refreshInterval"></p>
-<div>
-  URL: <input size="80" ng-model="newFeed.url">
-  Title: <input size="80" ng-model="newFeed.title">
+<form name="newFeed">
+  URL: <input type="url" required="true" size="80" ng-model="newFeed.url">
+  Title: <input size="80" ng-model="newFeed.title" required="true">
   <button ng-click="addFeed(newFeed)">Add Feed</button>
-</div>
+</form>
 
 <div class="hero-unit" ng-repeat="feed in feeds">
   <h1>{{feed.title}}</h1>
