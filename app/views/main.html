@@ -1,9 +1,23 @@
+<h1>AngularJS Feed Reader</h1>
 <p>Refresh (seconds): <input ng-model="refreshInterval"></p>
-<form name="newFeed">
-  URL: <input type="url" required="true" size="80" ng-model="newFeed.url">
-  Title: <input size="80" ng-model="newFeed.title" required="true">
-  <button ng-click="addFeed(newFeed)">Add Feed</button>
+<form name="newFeed" novalidate>
+  URL: <input type="url" required="true" size="80" ng-model="newFeed.url" />
+  Title: <input type="text" size="80" ng-model="newFeed.title" required="true" />
+  
+  <span class="error" ng-show="newFeed.$error.required">Required!</span>
+  <span class="error" ng-show="newFeed.$error.url">Invalid URL format!</span>
+
+  <button ng-disabled="!newFeed.$valid" ng-click="addFeed(newFeed)">Add Feed</button>
 </form>
+
+<div>
+  <h2>All</h2>
+  <ul>
+    <li ng-repeat="item in stories">
+      <a ng-href="{{item.link.href || item.link}}">{{item.title}}</a>
+    </li>
+  <ul>
+</div>
 
 <div class="hero-unit" ng-repeat="feed in feeds">
   <h1>{{feed.title}}</h1>

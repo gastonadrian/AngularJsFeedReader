@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('AngularFeedReaderApp')
-  .controller('MainCtrl', function ($scope, $http, $timeout) {
+  .controller('MainCtrl', function ($scope, $http, $timeout, $filter) {
 
     $scope.refreshInterval = 60;
-
+    
+    $scope.stories = [];
 
     $scope.feeds = [{
       title: 'dailyjs',
@@ -14,9 +15,11 @@ angular.module('AngularFeedReaderApp')
 
     $scope.addFeed = function(feed) {
       if (feed.$valid) {
-        $scope.feeds.push(feed);
-        $scope.fetchFeed(feed);
+        var newFeed = angular.copy(feed);
+        $scope.feeds.push(newFeed);
+        $scope.fetchFeed(newFeed);
         $scope.newFeed = {};
+
       }
     };
 
@@ -32,6 +35,7 @@ angular.module('AngularFeedReaderApp')
             if (data.query.results) {
               feed.items = data.query.results.entry || data.query.results.item;
             }
+            addStories(feed.items);
           }).
           error(function(data, status, headers, config) {
             console.error('Error fetching feed:', data);
@@ -39,6 +43,29 @@ angular.module('AngularFeedReaderApp')
 
         $timeout(function() { $scope.fetchFeed(feed); }, $scope.refreshInterval * 1000);
 
+    };
+
+    var addStories = function(stories) {
+      var changed = false;
+      for (var i = 0; i < stories.length; i++) {
+        if (!storyInCollection(stories[i])) {
+          $scope.stories.push(stories[i]);
+          changed = true;
+        }
+      };
+
+      if (changed) {
+        $scope.stories = $filter('orderBy')($scope.stories, 'date');
+      }
+    };
+
+    var storyInCollection = function(story) {
+      for (var i = 0; i < $scope.stories.length; i++) {
+        if ($scope.stories[i].id === story.id) {
+          return true;
+        }
+      }
+      return false;
     };
 
     $scope.deleteFeed = function(feed) {
